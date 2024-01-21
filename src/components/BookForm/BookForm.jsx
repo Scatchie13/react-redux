@@ -14,9 +14,7 @@ const BookForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (title && author) {
-      const book = createBookWithID({ title, author })
-
-      dispatch(addBook(book))
+      dispatch(addBook(createBookWithID({ title, author })))
 
       setAuthor('')
       setTitle('')
@@ -27,9 +25,7 @@ const BookForm = () => {
     const randomIndex = Math.floor(Math.random() * booksData.length)
     const randomBook = booksData[randomIndex]
 
-    const randomBookWithID = createBookWithID(randomBook)
-
-    dispatch(addBook(randomBookWithID))
+    dispatch(addBook(createBookWithID(randomBook)))
   }
 
   return (
