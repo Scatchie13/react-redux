@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux/es/hooks/useSelector'
 import { useDispatch } from 'react-redux'
-import { delBook } from '../../redux/books/actionCreators'
+import { delBook, toggleFavorite } from '../../redux/books/actionCreators'
+import { BsBookmarkStarFill, BsBookmarkStar } from 'react-icons/bs'
 
 import './BookList.css'
 
@@ -12,6 +13,10 @@ const BookList = () => {
 
   const handleDelete = (id) => {
     dispatch(delBook(id))
+  }
+
+  const handleToggleFavorite = (id) => {
+    dispatch(toggleFavorite(id))
   }
 
   return (
@@ -27,6 +32,13 @@ const BookList = () => {
                 {++i}. {book.title} by <strong>{book.author}</strong>
               </div>
               <div className="book-actions">
+                <span onClick={() => handleToggleFavorite(book.id)}>
+                  {book.isFavorite ? (
+                    <BsBookmarkStarFill className="star-icon" />
+                  ) : (
+                    <BsBookmarkStar className="star-icon" />
+                  )}
+                </span>
                 <button onClick={() => handleDelete(book.id)}>del</button>
               </div>
             </li>
