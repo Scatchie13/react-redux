@@ -3,7 +3,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import createBookWithID from '../../utils/createBookWithID'
 import { setError } from './errorSlice'
 
-const initialState = []
+const initialState = {
+  books: [],
+  isLoading: false,
+}
 
 export const fetchBook = createAsyncThunk(
   'books/fetchBook',
@@ -23,30 +26,41 @@ const filterBooks = createSlice({
   initialState: initialState,
   reducers: {
     addBook: (state, action) => {
-      return [...state, action.payload]
+      state.books.push(action.payload)
     },
     delBook: (state, action) => {
-      return state.filter((book) => book.id !== action.payload)
+      return {
+        ...state,
+        books: state.books.filter((book) => book.id !== action.payload),
+      }
     },
     toggleFavorite: (state, action) => {
-      return state.map((book) =>
-        book.id === action.payload
-          ? { ...book, isFavorite: !book.isFavorite }
-          : book
-      )
+      state.books.forEach((book) => {
+        if (book.id === action.payload) {
+          book.isFavorite = !book.isFavorite
+        }
+      })
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(fetchBook.fulfilled, (state, action) => {
+  extraReducers: {
+    [fetchBook.pending]: (state) => {
+      state.isLoading = true
+    },
+    [fetchBook.fulfilled]: (state, action) => {
+      state.isLoading = false
       if (action.payload.title && action.payload.author) {
-        state.push(createBookWithID(action.payload, 'via api'))
+        state.books.push(createBookWithID(action.payload, 'via api'))
       }
-    })
+    },
+    [fetchBook.rejected]: (state) => {
+      state.isLoading = false
+    },
   },
 })
 
 export const { addBook, delBook, toggleFavorite } = filterBooks.actions
 
-export const selectBooks = (state) => state.books
+export const selectBooks = (state) => state.books.books
+export const selectIsLoading = (state) => state.books.isLoading
 
 export default filterBooks.reducer
