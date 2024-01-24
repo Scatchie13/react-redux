@@ -1,4 +1,6 @@
+import axios from 'axios'
 import { createSlice } from '@reduxjs/toolkit'
+import createBookWithID from '../../utils/createBookWithID'
 
 const initialState = []
 
@@ -23,6 +25,17 @@ const filterBooks = createSlice({
 })
 
 export const { addBook, delBook, toggleFavorite } = filterBooks.actions
+
+export const thunkFunc = async (dispatch, getState) => {
+  try {
+    const res = await axios.get('http://localhost:4000/random-book')
+    if (res?.data?.title && res?.data?.author) {
+      dispatch(addBook(createBookWithID(res.data, 'via api')))
+    }
+  } catch (error) {
+    console.log('error', error)
+  }
+}
 
 export const selectBooks = (state) => state.books
 
